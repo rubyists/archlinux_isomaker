@@ -1,0 +1,119 @@
+#!/bin/bash
+# Bash Module
+#
+# Contains routines we use to help flesh out our additionals.
+
+# Dependencies
+depend_procedure core automatic
+
+customizer_system_prep ()
+{
+  # <!-- begin_system_prep = Rubyists, LLC. Default Build -->
+  # Create and populate a directory with git pull of all our required files going forward.
+  BUILD_CONFIG_DIR="/home/arch/tcc_arch_installer/rubyists"
+
+  cd $BUILD_CONFIG_DIR/default_build
+
+  # Configure our preferred, minimalistic, sudoers file
+  if [ -f "/etc/sudoers" ]; then
+    rm -f /etc/sudoers
+  else
+   echo "root ALL=(ALL) ALL" > ./sudoers
+   echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
+   mv -f ./sudoers /etc/sudoers
+   chmod 0440 /etc/sudoers
+   chown root:root /etc/sudoers
+  fi
+
+  # Add 'callcenter' user
+  useradd -g users -m -G wheel -s /bin/bash callcenter
+
+  # Set up ssh access to 'callcenter'
+  # Physically ensure proper owner+perms are set correctly.
+  cp -R $BUILD_CONFIG_DIR/default_build/root-image/home/callcenter/.ssh /home/callcenter/
+  chown -R callcenter:users /home/callcenter/.ssh
+  chmod 700 /home/callcenter/.ssh
+  chmod 600 /home/callcenter/.ssh/authorized_keys
+
+  # Copy our required pacman.conf into place and update system. Capture a logfile of the action.
+  cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.conf /etc/pacman.conf
+  chown root:root /etc/pacman.conf
+  chmod 644 /etc/pacman.conf
+
+  # Install our network config
+  cp $BUILD_CONFIG_DIR/default_build/root-image/etc/rc.conf /etc/
+  cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/network.d /etc/
+
+
+  # Make sure root owns the replaced files. default ownership is root:root, perms are 644.
+  echo "NOTE - setting permissions on replaced files"
+  for name in {/etc/rc.conf,/etc/pacman.conf,/etc/network.d/rubyists-ethernet}; do
+    chown root:root $name
+    chmod 644 $name
+  done
+
+  # This will get rebuilt anyways and stops potential errors
+  if [ -f "/etc/profile.d/locale.sh" ]; then
+    rm /etc/profile.d/locale.sh
+  fi
+
+  # Now sync and update the package lists, then upgrade the system.
+  pacman -Syy
+  pacman --noprogressbar --noconfirm --logfile $HOME/pacman_install_and_upgrade.log -Syu
+  # <!-- end_system_prep
+}
+
+customizer_install_support_packages ()
+{
+  # <!-- begin_install_support_packages = Rubyists, LLC. Default Build -->
+  # Expect 'callcenter'
+  echo "**** I AM $(whoami) ****"
+
+  # Change to 'callcenter'. All further work should be owned by 'callcenter'
+  su - callcenter
+
+  # Configure filesystem for package builds
+  mkdir $HOME/builds
+  cd $HOME/builds
+
+  # Get all needed AUR packages for our configuration.
+  # TODO: Change this so a sourced file of packages we can pass to a looped $(wget $url)
+  wget http://aur.archlinux.org/packages/fg/fgetty/fgetty.tar.gz
+  wget http://aur.archlinux.org/packages/ru/runit-dietlibc/runit-dietlibc.tar.gz
+  wget http://aur.archlinux.org/packages/ru/runit-run/runit-run.tar.gz
+  wget http://aur.archlinux.org/packages/ru/runit-services/runit-services.tar.gz
+  wget http://aur.archlinux.org/packages/sv/sv-helper/sv-helper.tar.gz
+  wget http://aur.archlinux.org/packages/so/socklog-dietlibc/socklog-dietlibc.tar.gz
+  wget http://aur.archlinux.org/packages/fr/freeswitch-git/freeswitch-git.tar.gz
+
+  # Now extract, build, create, and install AUR packages we grabbed
+  # TODO: Change this to a sourced, ordered, file for package install
+  for name in ./*.gz ; do tar -xzvf $name ; done
+  cd fgetty && makepkg -si
+  cd ../runit-dietlibc && makepkg -si
+  cd ../runit-run && makepkg -si
+  cd ../socklog-dietlibc && makepkg -si
+  cd ../runit-services && makepkg -si
+  cd ../sv-helper && makepkg -si
+  cd ../freeswitch-git && makepkg -si
+  # <!-- end_install_support_packages -->
+}
+
+customizer_configure_runit_services_and_logs ()
+{
+  # <!-- begin_configure_runit_services_and_logs = Rubyists, LLC. Default Build -->
+  # Create default runit services
+  ln -s /etc/sv/sshd /service/sshd
+  ln -s /etc/sv/cron /service/cron
+
+  # Set up socklog
+  socklog-conf unix root daemon
+  socklog-conf klog root daemon
+  ln -s /etc/sv/socklog-unix /service/socklog-unix
+  ln -s /etc/sv/socklog-klog /service/socklog-klog
+
+  # Enable freeswitch as a default service last always. Not required, just good form that last service enabled
+  # be that which everything else was installed as support for.
+  ln -s /etc/sv/freeswitch /service/freeswitch 
+  # <!-- end_configure_runit_services_and_logs -->
+}
