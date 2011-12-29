@@ -74,9 +74,10 @@ customizer_install_support_packages ()
 
 	# Now, chroot and execute within the context of the new system.
   echo "STARTING CHROOT"
-	# Installing fakeroot in chroot tree.
-	echo "Installing fakeroot in chroot tree."
-	/usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/pacman -S fakeroot
+	## Installing fakeroot in chroot tree.
+	# echo "Installing fakeroot in chroot tree."
+	# /usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/pacman -S fakeroot
+  
   # Add 'callcenter' user now that we've populated it's homedir with the authorized_keys file.
   /usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -g users -G wheel -s /bin/bash callcenter
   # Ensure that callcenter owns it's homedir and files, then su to callcenter to start pkg builds.
@@ -106,6 +107,8 @@ customizer_install_support_packages ()
   # TODO: Change this to a sourced, ordered, file for package install
   /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; for name in ./*.gz ; do tar -xzvf $name ; done'
   /usr/sbin/chroot --userspec=root:root /mnt/ /bin/chown -R callcenter:users /home/callcenter/builds
+  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/mknod /dev/null c 1 3
+  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/chmod 0666 /dev/null
   /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/fgetty ; makepkg -si'
   /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/runit-dietlibc ; makepkg -si'
   /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/runit-run ; makepkg -si'
