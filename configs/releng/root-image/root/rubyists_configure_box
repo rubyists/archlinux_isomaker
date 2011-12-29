@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-aif -p "aif_build_module/rubyists_customizer" -c "/usr/lib/aif/user/aif_build_module/rubyists_aif_build_profile"
+aif -p "aif_build_module/rubyists_customizer" -c "/usr/lib/aif/user/aif_build_module/rubyists_aif_build_profile" -d -l
