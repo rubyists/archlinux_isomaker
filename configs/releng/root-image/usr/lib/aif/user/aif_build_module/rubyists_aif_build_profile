@@ -23,14 +23,14 @@ TIMEZONE=America/Toronto
 
 # Do you want to have additional pacman repositories or packages available at runtime (during installation)?
 # RUNTIME_REPOSITORIES same format as TARGET_REPOSITORIES
-RUNTIME_REPOSITORIES=
+RUNTIME_REPOSITORIES=$TARGET_REPOSITORIES
 # space separated list
-RUNTIME_PACKAGES=''
+RUNTIME_PACKAGES='e2fsprogs vim libjpeg-turbo xz readline pam ncurses linux-api-headers openssh openssl git ifplugd netcfg bash-completion'
 
 # packages to install
 TARGET_GROUPS='base base-devel'       # all packages in this group will be installed (defaults to base if no group and no packages are specified)
 TARGET_PACKAGES_EXCLUDE= # Exclude these packages if they are member of one of the groups in TARGET_GROUPS.  example: 'nano reiserfsprogs' (they are in base)
-TARGET_PACKAGES="e2fsprogs vim libjpeg-turbo xz readline pam ncurses linux-api-headers openssh openssl git ifplugd netcfg bash-completion" # you can also specify separate packages to install (this is empty by default)
+TARGET_PACKAGES="" # you can also specify separate packages to install (this is empty by default)
 
 # you can optionally also override some functions...
 # This way you can change/extend/remove pretty much all functionality in AIF !
