@@ -74,9 +74,9 @@ customizer_install_support_packages ()
 
 	# Now, chroot and execute within the context of the new system.
   echo "STARTING CHROOT"
-	## Installing fakeroot in chroot tree.
-	# echo "Installing fakeroot in chroot tree."
-	# /usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/pacman -S fakeroot
+	## Installing fakeroot and sudo in chroot tree.
+	# PROBLEM: Even doing this, in just a bit, we're told there is no sudo! This a PATH issue?
+	/usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/yes | /usr/bin/pacman -S fakeroot sudo
   
   # Add 'callcenter' user now that we've populated it's homedir with the authorized_keys file.
   /usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -g users -G wheel -s /bin/bash callcenter
