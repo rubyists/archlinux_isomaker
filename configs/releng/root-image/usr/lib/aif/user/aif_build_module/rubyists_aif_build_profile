@@ -58,8 +58,11 @@ worker_configure_system () {
   # We're calling AIF with '-p' and passing the procedure file directly, so all functions/procedures should be available here.
   # So, now we call our own setup functions
   echo "Rubyists, LLC. FS Box-It deployment started."
-  customizer_system_prep \
-	customizer_install_support_packages \
+  echo "STARTING SYSTEM_PREP"
+  customizer_system_prep
+  echo "STARTING INSTALL_SUPPORT_PACKAGES"
+	customizer_install_support_packages
+  echo "STARTING RUNIT_SERVICES_AND_LOGS"
 	customizer_configure_runit_services_and_logs
 	# <!-- end_rubyists_final_customizing -->
 }
