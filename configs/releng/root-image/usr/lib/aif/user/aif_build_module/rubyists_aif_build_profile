@@ -25,7 +25,7 @@ TIMEZONE=America/Toronto
 # RUNTIME_REPOSITORIES same format as TARGET_REPOSITORIES
 RUNTIME_REPOSITORIES=$TARGET_REPOSITORIES
 # space separated list
-RUNTIME_PACKAGES='e2fsprogs vim libjpeg-turbo xz readline pam ncurses linux-api-headers openssh openssl git ifplugd netcfg bash-completion'
+RUNTIME_PACKAGES='e2fsprogs vim libjpeg-turbo xz readline pam ncurses linux-api-headers openssh openssl git ifplugd netcfg bash-completion fakeroot'
 
 # packages to install
 TARGET_GROUPS='base base-devel'       # all packages in this group will be installed (defaults to base if no group and no packages are specified)
@@ -41,7 +41,9 @@ worker_intro () {
   echo "nameserver 4.2.2.2" > /etc/resolv.conf
   echo "nameserver 4.2.2.3" >> /etc/resolv.conf
   #/usr/sbin/dhcpcd
-  netcfg -u rubyists-ethernet
+  #
+  # We already added the steps needed for net-profiles. This isn't needed now
+  # netcfg -u rubyists-ethernet
   sleep 10
   }
 
@@ -57,13 +59,16 @@ worker_configure_system () {
   # Load builder functions. - Everything comes into play through this call
   # We're calling AIF with '-p' and passing the procedure file directly, so all functions/procedures should be available here.
   # So, now we call our own setup functions
-  echo "Rubyists, LLC. FS Box-It deployment started."
-  echo "STARTING SYSTEM_PREP"
-  customizer_system_prep
-  echo "STARTING INSTALL_SUPPORT_PACKAGES"
-	customizer_install_support_packages
-  echo "STARTING RUNIT_SERVICES_AND_LOGS"
-	customizer_configure_runit_services_and_logs
+  echo "Rubyists, LLC. FS Box-It started."
+  echo "___STARTING SYSTEM_PREP___"
+  customizer_system_prep \
+  echo "___ENDING SYSTEM_PREP___"
+  echo "___STARTING INSTALL_SUPPORT_PACKAGES___"
+  customizer_install_support_packages \
+	echo "___ENDING INSTALL_SUPPORT_PACKAGES___"
+  echo "___STARTING RUNIT_SERVICES_AND_LOGS___"
+	customizer_configure_runit_services_and_logs \
+	echo "___ENDING RUNIT_SERVICES_AND_LOGS___"
 	# <!-- end_rubyists_final_customizing -->
 }
 

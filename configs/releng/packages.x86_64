@@ -54,3 +54,4 @@ wireless_tools
 wpa_actiond
 xz
 zd1211-firmware
+fakeroot
