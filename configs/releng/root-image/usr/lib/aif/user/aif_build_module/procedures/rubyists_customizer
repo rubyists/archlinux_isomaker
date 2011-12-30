@@ -17,16 +17,21 @@ customizer_system_prep ()
   MOUNT="/mnt"
 
   # Configure our preferred, minimalistic, sudoers file
-  if [ -f "$MOUNT/etc/sudoers" ]; then
+  # Removing here ensures sudo package has no reason to fail.
+	if [ -f "$MOUNT/etc/sudoers" ]; then
     rm -f $MOUNT/etc/sudoers
-  else
-   echo "root ALL=(ALL) ALL" > ./sudoers
-   echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
-   mv -f ./sudoers $MOUNT/etc/sudoers
-   chmod 0440 $MOUNT/etc/sudoers
-   chown root:root $MOUNT/etc/sudoers
-  fi
+	fi
+	
+  # Install fakeroot and sudo in chroot tree. Create final sudoers file.
+	/usr/bin/yes | /usr/bin/pacman -Sy -r $MOUNT
+	/usr/bin/yes | /usr/bin/pacman -S fakeroot sudo -r $MOUNT
 
+  echo "root ALL=(ALL) ALL" > ./sudoers
+  echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
+  mv -f ./sudoers $MOUNT/etc/sudoers
+  chmod 0440 $MOUNT/etc/sudoers
+  chown root:root $MOUNT/etc/sudoers
+  
   # Copy our required pacman.conf into place and update system. Capture a logfile of the action.
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.conf $MOUNT/etc/pacman.conf
   chown root:root $MOUNT/etc/pacman.conf
@@ -74,10 +79,6 @@ customizer_install_support_packages ()
 
 	# Now, chroot and execute within the context of the new system.
   echo "STARTING CHROOT"
-	## Installing fakeroot and sudo in chroot tree.
-	# PROBLEM: Even doing this, in just a bit, we're told there is no sudo! This a PATH issue?
-	/usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/yes | /usr/bin/pacman -S fakeroot sudo
-  
   # Add 'callcenter' user now that we've populated it's homedir with the authorized_keys file.
   /usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -g users -G wheel -s /bin/bash callcenter
   # Ensure that callcenter owns it's homedir and files, then su to callcenter to start pkg builds.
