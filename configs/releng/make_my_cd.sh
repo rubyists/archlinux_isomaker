@@ -19,5 +19,5 @@ sudo bash ./build.sh purge single all
 sudo /usr/bin/time -p bash ./build.sh build single all
 
 # Now copy the core ISO off to the host for the VM(s)
-scp out/archlinux-2011.12.29-core-x86_64.iso pgpmbp:~/
+scp out/archlinux*-core-x86_64.iso pgpmbp:~/
 

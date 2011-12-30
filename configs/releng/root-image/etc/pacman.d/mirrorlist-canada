@@ -1,0 +1,10 @@
+##
+## Arch Linux repository mirrorlist
+## Sorted by mirror score from mirror status page
+## Generated on 2011-12-30
+
+## Score: 2.2, Canada
+Server = http://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch
+## Score: 7.1, Canada
+Server = http://mirror.its.dal.ca/archlinux/$repo/os/$arch
+

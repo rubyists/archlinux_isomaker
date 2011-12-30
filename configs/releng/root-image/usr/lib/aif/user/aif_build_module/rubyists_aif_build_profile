@@ -50,6 +50,8 @@ worker_intro () {
 worker_configure_system () {
   preconfigure_target
   sed -i 's/^HOSTNAME="myhost"/HOSTNAME="freeswitch"/' $var_TARGET_DIR/etc/rc.conf
+	mkdir -p $var_TARGET_DIR/etc/pacman.d
+	cp /etc/pacman.d/mirrorlist $var_TARGET_DIR/etc/pacman.d/
   postconfigure_target
   
   # TODO: Define where to configure the network itself. Is that done directly after the sed?Just prior to?

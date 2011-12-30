@@ -56,3 +56,5 @@ xz
 zd1211-firmware
 fakeroot
 sudo
+devtools
+tmux
