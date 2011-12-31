@@ -22,25 +22,16 @@ customizer_system_prep ()
   # We use the installer's var_TARGET_DIR variable as that should be where the new_install system is mounted.
   echo "Installer sees NEW_SYSTEM's mount as: ${var_TARGET_DIR}"
 
-  # Configure our preferred, minimalistic, sudoers file
-  # Removing here ensures sudo package has no reason to fail.
-  if [ -f "$var_TARGET_DIR/etc/sudoers" ]; then
-    rm -f $var_TARGET_DIR/etc/sudoers
-  fi
-
-	# Create our own sudoers file, and ensure perms and ownerships
-  echo "root ALL=(ALL) ALL" > ./sudoers
-  echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
-  mv -f ./sudoers $var_TARGET_DIR/etc/sudoers
-  chmod 0440 $var_TARGET_DIR/etc/sudoers
-  chown root:root $var_TARGET_DIR/etc/sudoers
-
   # Install our network and pacman config into the chroot
 	#
+	# This will be called later on to kick off the AUR package install process.
+	cp $BUILD_CONFIG_DIR/default_build/root-image/root/callcenter_config.sh $var_TARGET_DIR/root/
+	
 	# First the files we need
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/rc.conf $var_TARGET_DIR/etc/
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/resolv.conf $var_TARGET_DIR/etc/
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.conf $var_TARGET_DIR/etc/
+
 	# Now the directories we need
   cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/network.d $var_TARGET_DIR/etc/
   cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d $var_TARGET_DIR/etc/
@@ -63,10 +54,6 @@ customizer_system_prep ()
   if [ -f "$var_TARGET_DIR/etc/profile.d/locale.sh" ]; then
     rm $var_TARGET_DIR/etc/profile.d/locale.sh
   fi
-
-  # Update chroot's pacman. Install fakeroot, tmux, git, and sudo in chroot tree. Create final sudoers file.
-  /usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/pacman -Syu --noconfirm
-  /usr/sbin/chroot --userspec=root:root /mnt/ /usr/bin/pacman -S fakeroot tmux git devtools sudo --needed --noconfirm
 
   # Now sync and update the package lists, then upgrade the system.
   /usr/sbin/chroot --userspec=root:root /mnt/ pacman -Syy --noconfirm
