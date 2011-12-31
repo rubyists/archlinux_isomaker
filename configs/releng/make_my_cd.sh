@@ -9,6 +9,7 @@ rm -rf tcc_arch_installer 2>/dev/null || true
 git clone git@github.com:rubyists/tcc_arch_installer.git
 cd $BUILD_TREE/root-image/home/arch/tcc_arch_installer
 git checkout development
+git pull origin
 
 # Update any changes to within $BUILD_TREE
 sudo cp -R rubyists/aif_build_module $BUILD_TREE/root-image/usr/lib/aif/user/
