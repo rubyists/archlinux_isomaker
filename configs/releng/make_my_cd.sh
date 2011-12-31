@@ -4,10 +4,10 @@ BUILD_TREE="$HOME/build/archlinux_isomaker/configs/releng"
 cd $BUILD_TREE
 
 # Update root-image
-cd $BUILD_TREE/root-image/home/arch/
-rm -rf tcc_arch_installer 2>/dev/null
-git clone git@github.com:rubyists/tcc_arch_installer.git
-cd tcc_arch_installer
+#cd $BUILD_TREE/root-image/home/arch/
+#rm -rf tcc_arch_installer 2>/dev/null
+#git clone git@github.com:rubyists/tcc_arch_installer.git
+cd $BUILD_TREE/root-image/home/arch/tcc_arch_installer
 git checkout development
 
 # Update any changes to within $BUILD_TREE

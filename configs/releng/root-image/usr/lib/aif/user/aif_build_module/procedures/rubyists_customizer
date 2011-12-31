@@ -5,6 +5,11 @@
 
 # Dependencies
 depend_procedure core automatic
+# aif passes /usr/lib/aif/user/aif_build_module into its exectuion tree,
+# following rubyists_aif_build_profile (generic-install-dsa rewrite)
+# AIF calls worker_configure_system in rubyists_aif_profile. We then
+# INSIDE that function all all of ours. These are the definitions of each.
+
 
 customizer_system_prep ()
 {
@@ -106,31 +111,7 @@ customizer_install_support_packages ()
   # TODO: Change this so a sourced file of packages we can pass to a looped $(wget $url)
 	# Make sure we have a proper pacman
 	cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d/mirrorlist-canada $var_TARGET_DIR/etc/pacman.d/mirrorlist
-	/usr/sbin/chroot --userspec=root:root /mnt/ pacman -Syy --noconfirm
-	
-	# Now we start the builds themselves. Pacman should be happy now, dang it!
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'echo "**** STARTING BUILDS ****"'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/fg/fgetty/fgetty.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/ru/runit-dietlibc/runit-dietlibc.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/ru/runit-run/runit-run.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/ru/runit-services/runit-services.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/sv/sv-helper/sv-helper.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/so/socklog-dietlibc/socklog-dietlibc.tar.gz'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; wget http://aur.archlinux.org/packages/fr/freeswitch-git/freeswitch-git.tar.gz'
-
-  # Now extract, build, create, and install AUR packages we grabbed
-  # TODO: Change this to a sourced, ordered, file for package install
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds ; for name in ./*.gz ; do tar -xzvf $name ; done'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/chown -R callcenter:users /home/callcenter/builds
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/mknod /dev/null c 1 3
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/chmod 0666 /dev/null
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/fgetty ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/runit-dietlibc ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/runit-run ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/socklog-dietlibc ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/runit-services ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/sv-helper ; makepkg -si --noconfirm'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'cd $HOME/builds/freeswitch-git ; makepkg -si --noconfirm'
+	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
 
   # Mark that we completed successfully
   return 0
