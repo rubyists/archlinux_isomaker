@@ -6,11 +6,15 @@ cd $BUILD_TREE
 # Update root-image
 cd $BUILD_TREE/root-image/home/arch/
 rm -rf tcc_arch_installer
-git clone git://github.com/rubyists/tcc_arch_installer
+git clone git@github.com:rubyists/tcc_arch_installer.git
 cd tcc_arch_installer
+git checkout development
 
 # Update any changes to within $BUILD_TREE
 sudo cp -R rubyists/aif_build_module $BUILD_TREE/root-image/usr/lib/aif/user/
+sudo cp -R rubyists/default_build/root-image/etc/pacman* $BUILD_TREE/root-image/etc/
+sudo cp rubyists/default_build/root-image/etc/rc.conf $BUILD_TREE/root-image/etc/
+
 sudo cp rubyists/default_build/root-image/root/rubyists_configure_box $BUILD_TREE/root-image/root/
 
 cd $BUILD_TREE
