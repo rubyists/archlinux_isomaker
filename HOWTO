@@ -1,0 +1,46 @@
+BUILD INSTRUCTIONS
+
+NOTE: This requires TWO repositories. archlinux_isomaker and this one (tcc_arch_installer)
+  the archlinux_isomaker is the one that creates the actual ISO, tcc_arch_installer contains the files we are trying to inject into
+  the new system, and that customize the ISO installer itself.
+
+
+  On an archlinux box with a user named 'me' (can be anything), do the following:
+
+# Set up the environment
+
+# NOTE - Make sure you have your $HOME/.ssh directory set up with your key for accessing GH repos
+#        Make sure you have your $HOME/.gitconfig set with everything GH needs
+#        Change wheel group to not need a password if you don't want to be prompted every build.
+#
+  mkdir $HOME/build
+
+# Install packages we need for building the ISO
+  sudo pacman -S time tmux fakeroot sudo devtools squashfs-tools git libisoburn --needed
+
+# Grab our archiso creation repo
+  cd $HOME/build && git clone git@github.com:rubyists/archlinux_isomaker
+
+# Install our mkarchiso script(s) 
+  cd archlinux_isomaker/archiso && sudo make install
+
+# NOTE - PLEASE READ THIS AND UNDERSTAND THIS PART!
+# Remove existing tcc_arch_installer and regrab to make sure we're up to date.
+# This is populated in the archlinux_isomaker so that, in the future, when people grab that repo they have all the files they need
+# in place and ready to go. aka eventually, archlinux_isomaker will contain all files for a singular build.
+# To ensure we have THE most up to date version of the build files in place, we will delete this repo's tcc_arch_installer directory
+# and populate it with a fresh version and the correct branch.
+# This will be repopulated every single ISO build run with any updates. but its also part of archlinux_isomaker so we have a copy too.
+  cd $HOME/build/archlinux_isomaker/configs/releng/root-image/home/arch
+  rm -rf tcc_arch_installer && git clone git@github.com:rubyists/tcc_arch_installer
+  cd tcc_arch_installer && git checkout development && git pull origin
+
+# Now we can create a new image
+  cd $HOME/build/archlinux_isomaker/config/releng # everything is based off this directory
+  ./make_my_cd.sh # this updates the tcc_arch_installer files we populate into the ISO, and then creates 'single all' for us
+
+
+  TODO
+
+  Make sure these packages - sudo, xz, readline, pam, ncurses, linux-api-headers, openssh, openssl, and base-devel if not selected during installation of the initial system, are installed in our processes.
+
