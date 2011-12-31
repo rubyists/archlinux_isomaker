@@ -4,8 +4,10 @@ BUILD_TREE="$HOME/build/archlinux_isomaker/configs/releng"
 cd $BUILD_TREE
 
 # Update root-image
-cd root-image/home/arch/tcc_arch_installer
-git pull origin
+cd $BUILD_TREE/root-image/home/arch/
+rm -rf tcc_arch_installer
+git clone git://github.com/rubyists/tcc_arch_installer
+cd tcc_arch_installer
 
 # Update any changes to within $BUILD_TREE
 sudo cp -R rubyists/aif_build_module $BUILD_TREE/root-image/usr/lib/aif/user/
