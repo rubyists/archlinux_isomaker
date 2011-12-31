@@ -5,9 +5,9 @@ cd $BUILD_TREE
 
 # Update root-image
 cd $BUILD_TREE/root-image/home/arch/
-rm -rf tcc_arch_installer
+rm -rf tcc_arch_installer 2>/dev/null || true
 git clone git@github.com:rubyists/tcc_arch_installer.git
-cd tcc_arch_installer
+cd $BUILD_TREE/root-image/home/arch/tcc_arch_installer
 git checkout development
 
 # Update any changes to within $BUILD_TREE
@@ -23,7 +23,4 @@ cd $BUILD_TREE
 sudo rm -f out/*.iso
 sudo bash ./build.sh purge single all
 sudo /usr/bin/time -p bash ./build.sh build single all
-
-# Now copy the core ISO off to the host for the VM(s)
-scp out/archlinux*-core-x86_64.iso pgpmbp:~/
 
