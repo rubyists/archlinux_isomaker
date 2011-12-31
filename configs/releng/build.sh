@@ -97,8 +97,8 @@ make_customize_root_image() {
         chmod 750 ${work_dir}/root-image/etc/sudoers.d
         chmod 440 ${work_dir}/root-image/etc/sudoers.d/g_wheel
         mkdir -p ${work_dir}/root-image/etc/pacman.d
-        wget -O ${work_dir}/root-image/etc/pacman.d/mirrorlist http://www.archlinux.org/mirrorlist/all/
-        sed -i "s/#Server/Server/g" ${work_dir}/root-image/etc/pacman.d/mirrorlist
+        #wget -O ${work_dir}/root-image/etc/pacman.d/mirrorlist http://www.archlinux.org/mirrorlist/all/
+        cp -af ${script_path}/root-image/etc/pacman* ${work_dir}/root-image/etc/ 
         chroot ${work_dir}/root-image /usr/sbin/locale-gen
         chroot ${work_dir}/root-image /usr/sbin/useradd -m -p "" -g users -G "audio,disk,optical,wheel" arch
         : > ${work_dir}/build.${FUNCNAME}
