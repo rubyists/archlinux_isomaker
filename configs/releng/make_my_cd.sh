@@ -16,6 +16,7 @@ sudo cp -R rubyists/default_build/root-image/etc/pacman* $BUILD_TREE/root-image/
 sudo cp rubyists/default_build/root-image/etc/rc.conf $BUILD_TREE/root-image/etc/
 
 sudo cp rubyists/default_build/root-image/root/rubyists_configure_box $BUILD_TREE/root-image/root/
+sudo cp rubyists/default_build/root-image/root/callcenter_config.sh $BUILD_TREE/root-image/root/
 
 cd $BUILD_TREE
 
