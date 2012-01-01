@@ -50,13 +50,8 @@ worker_intro () {
 worker_configure_system () {
   preconfigure_target
   sed -i 's/^HOSTNAME="myhost"/HOSTNAME="freeswitch"/' $var_TARGET_DIR/etc/rc.conf
-	mkdir -p $var_TARGET_DIR/etc/pacman.d
-	cp /etc/pacman.d/mirrorlist $var_TARGET_DIR/etc/pacman.d/
   postconfigure_target
   
-  # TODO: Define where to configure the network itself. Is that done directly after the sed?Just prior to?
-  #       Or should we call it *now*? - We need to ensure the network is up at this point so the remainder of our custom stuff works correctly.
-  #
   # <!-- begin_rubyists_final_customizing = Rubyists, LLC. Default Build -->  
   # Load builder functions. - Everything comes into play through this call
   # We're calling AIF with '-p' and passing the procedure file directly, so all functions/procedures should be available here.

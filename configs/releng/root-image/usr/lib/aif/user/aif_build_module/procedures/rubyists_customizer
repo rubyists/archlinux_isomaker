@@ -16,11 +16,10 @@ customizer_system_prep ()
   # <!-- begin_system_prep = Rubyists, LLC. Default Build -->
   # Create and populate a directory with git pull of all our required files going forward.
   BUILD_CONFIG_DIR="/home/arch/tcc_arch_installer/rubyists"
-  cd $BUILD_CONFIG_DIR/default_build
 
   # Configure where the being-built install is.
   # We use the installer's var_TARGET_DIR variable as that should be where the new_install system is mounted.
-  echo "Installer sees NEW_SYSTEM's mount as: ${var_TARGET_DIR}"
+  echo "** ATTENTION: Installer preparing NEW_SYSTEM, mount on: ${var_TARGET_DIR} **"
 
   # Install our network and pacman config into the chroot
 	#
@@ -45,7 +44,7 @@ customizer_system_prep ()
   chown -R root:root $var_TARGET_DIR/etc/network.d
 
   # Now the files
-  for name in {etc/rc.conf,etc/resolv.conf,etc/pacman.conf,etc/pacman.d/mirrorlist,etc/network.d/rubyists-ethernet}; do
+  for name in {etc/rc.conf,etc/resolv.conf,etc/pacman.conf,etc/pacman.d/mirrorlist,etc/pacman.d/mirrorlist-canada,etc/network.d/rubyists-ethernet}; do
     chown root:root $var_TARGET_DIR/$name
     chmod 644 $var_TARGET_DIR/$name
   done
@@ -60,13 +59,6 @@ customizer_system_prep ()
 customizer_install_support_packages ()
 {
   # <!-- begin_install_support_packages = Rubyists, LLC. Default Build -->
-  # Change to 'callcenter'. All further work should be owned by 'callcenter'
-  cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d $var_TARGET_DIR/etc/
-  cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.conf $var_TARGET_DIR/etc/
-  chmod 755 $var_TARGET_DIR/etc/pacman.d
-  chown -R root:root $var_TARGET_DIR/etc/pacman.d
-  chown root:root $var_TARGET_DIR/etc/pacman.conf
-
   # Set up ssh access to 'callcenter', we;ll add the actual user when we chroot.
   # Physically ensure proper owner+perms are set correctly.
   echo "Copying 'callcenter' user into place.."
@@ -83,9 +75,19 @@ customizer_install_support_packages ()
 	/bin/mount --bin /dev /mnt/dev
 	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
 
+	# Add administrative user to the fresh install. This is used to access the box on reboot.
+	customizer_add_and_configure_admin
+	
   # Mark that we completed successfully
   return 0
   # <!-- end_install_support_packages -->
+}
+
+customizer_add_and_configure_admin ()
+{
+	# This adds an administrative user named 'admin'. The password is 'password', but we have to pass a hash to useradd.
+	echo "Adding administrative user."
+	/usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -m -g users -G wheel -p '$1$aeUCwEYC$TSONrOR/lQo/WWZwpHIG71' admin
 }
 
 customizer_configure_runit_services_and_logs ()

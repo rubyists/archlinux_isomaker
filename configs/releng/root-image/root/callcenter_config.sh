@@ -1,8 +1,9 @@
 #/usr/bin/env bash
 #
-# Script executes package installs fromwithin chroot env.
+# Script executes package installs from within chroot env.
+# Also provides entry point for additional work needed to new_system.
 
-pacman -Syy --noconfirm
+# Update package list, refreshing the list from the network first, then upgrading the chroot.
 pacman --noprogressbar --noconfirm --logfile $HOME/pacman_install_and_upgrade.log -Syu
 
 # Add 'callcenter' user now that we've populated it's homedir with the authorized_keys file.
@@ -29,7 +30,7 @@ echo "root ALL=(ALL) ALL" > ./sudoers
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
 mv -f ./sudoers /etc/sudoers
 chmod 0440 /etc/sudoers
-chown root:root /etc/sudoers
+chown 0:0 /etc/sudoers
 
 # Now we start the builds themselves. Pacman should be happy now, dang it!
 echo "**** STARTING BUILDS ****"
