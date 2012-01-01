@@ -16,7 +16,7 @@ if [ -f "/etc/sudoers" ]; then
   rm -f /etc/sudoers
 fi
 
-pacman -S fakeroot tmux git devtools sudo --needed --noconfirm
+pacman -S fakeroot tmux git devtools sudo net-tools --needed --noconfirm
 
 # Configure our preferred, minimalistic, sudoers file
 # Removing here ensures sudo package has no reason to fail.
