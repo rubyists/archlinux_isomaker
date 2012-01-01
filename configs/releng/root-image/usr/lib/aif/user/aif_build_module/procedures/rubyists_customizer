@@ -54,10 +54,6 @@ customizer_system_prep ()
   if [ -f "$var_TARGET_DIR/etc/profile.d/locale.sh" ]; then
     rm $var_TARGET_DIR/etc/profile.d/locale.sh
   fi
-
-  # Now sync and update the package lists, then upgrade the system.
-  /usr/sbin/chroot --userspec=root:root /mnt/ pacman -Syy --noconfirm
-  /usr/sbin/chroot --userspec=root:root /mnt/ pacman --noprogressbar --noconfirm --logfile $HOME/pacman_install_and_upgrade.log -Syu
   # <!-- end_system_prep
 }
 
@@ -80,24 +76,10 @@ customizer_install_support_packages ()
 
   # Now, chroot and execute within the context of the new system.
   echo "STARTING CHROOT"
-  # Add 'callcenter' user now that we've populated it's homedir with the authorized_keys file.
-  /usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -g users -G wheel -s /bin/bash callcenter
-  # Ensure that callcenter owns it's homedir and files, then su to callcenter to start pkg builds.
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/chown -R callcenter:users /home/callcenter
-
-  # NOTE: This is where masterkorp's work goes. This is where we install and configure packages.
-  #
-  # Expect 'callcenter'
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c whoami
-
-  # Configure filesystem for package builds
-  /usr/sbin/chroot --userspec=root:root /mnt/ /bin/su -l callcenter -c 'mkdir $HOME/builds'
-  # chroot --userspec=root:root /mnt/ su -l callcenter -c cd $HOME/builds
-
-  # Get all needed AUR packages for our configuration.
-  # TODO: Change this so a sourced file of packages we can pass to a looped $(wget $url)
 	# Make sure we have a proper pacman
 	cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d/mirrorlist-canada $var_TARGET_DIR/etc/pacman.d/mirrorlist
+
+	# Execute everything from  script within the chroot so all commands can be called directly on the chroot fs.
 	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
 
   # Mark that we completed successfully
