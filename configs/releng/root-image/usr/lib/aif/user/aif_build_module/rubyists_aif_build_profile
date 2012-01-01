@@ -38,8 +38,8 @@ worker_intro () {
   inform "Automatic procedure running the RUBYISTS LLC Default config.  THIS WILL ERASE AND OVERWRITE YOUR /DEV/SDA.  IF YOU DO NOT WANT THIS PRESS CTRL+C WITHIN 10 SECONDS"
   
   # Need networking from here forward. 
-  echo "nameserver 4.2.2.2" > /etc/resolv.conf
-  echo "nameserver 4.2.2.3" >> /etc/resolv.conf
+  echo "nameserver 8.8.8.8" > /etc/resolv.conf
+  echo "nameserver 4.2.2.2" >> /etc/resolv.conf
   #/usr/sbin/dhcpcd
   #
   # We already added the steps needed for net-profiles. This isn't needed now

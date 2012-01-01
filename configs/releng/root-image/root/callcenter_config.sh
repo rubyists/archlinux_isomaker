@@ -61,4 +61,5 @@ makepkg -si --asroot --noconfirm
 cd /tmp/builds/sv-helper
 makepkg -si --asroot --noconfirm
 cd /tmp/builds/freeswitch-git
-makepkg -si --asroot --noconfirm
+rm -rf /etc/sv/freeswitch
+makepkg -si --asroot --noconfirm --force

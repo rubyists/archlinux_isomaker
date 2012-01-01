@@ -80,6 +80,7 @@ customizer_install_support_packages ()
 	cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d/mirrorlist-canada $var_TARGET_DIR/etc/pacman.d/mirrorlist
 
 	# Execute everything from  script within the chroot so all commands can be called directly on the chroot fs.
+	/bin/mount --bin /dev /mnt/dev
 	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
 
   # Mark that we completed successfully
