@@ -1,16 +1,40 @@
 #!/bin/sh
-ip=$(myip.sh|awk -F"/" '{print $1}')
-netmask=$(myip.sh|awk -F"/" '{print $2}')
-gateway=$(mygateway.sh)
-clear
-dialog --title "Set up a network" \
-  --begin 2 2 \
-  --inputbox "IP Address" 8 24 "$ip"  --clear \
-  --inputbox "Netmask (/cidr)" 8 24 "/$netmask"  --clear \
-  --inputbox "Gateway IP" 8 24 "$gateway" --clear \
-  --inputbox "Primary DNS" 8 24 8.8.8.8 --clear \
-  --inputbox "Secondary DNS" 8 24 4.2.2.2  2>/tmp/networking
+function myip {
+  device=$1
+  dev=${device:-eth0}
+  ip -o a l dev $dev|awk '$3=="inet"{print $4}'|head -1
+}
+function mygateway {
+  ip route list default|awk '$1=="default"{print $3}'
+}
+function device_list {
+  ip l l|awk '$1~/[0-9]+:/&&$2!="lo:"{sub(":","",$2);print $2}'
+}
 
+devices=$(device_list|awk '{print $1, $1}')
+dialog --title "Device to use?" \
+  --menu "Choose a Device" 10 15 5 $devices 2>/tmp/netdev
+device=$(</tmp/netdev)
+rm /tmp/netdev
+clear
+ip=$(myip $device|awk -F"/" '{print $1}')
+netmask=$(myip $device|awk -F"/" '{print $2}')
+gateway=$(mygateway)
+dialog --title "Set up $device Network" \
+  --begin 0 0 \
+  --inputbox "IP Address" 8 24 "$ip"  --clear \
+  --begin 0 24 \
+  --inputbox "Netmask (/cidr)" 8 24 "/$netmask"  --clear \
+  --begin 0 0 \
+  --inputbox "Gateway IP" 8 24 "$gateway" --clear \
+  --begin 0 24 \
+  --inputbox "Primary DNS" 8 24 8.8.8.8 --clear \
+  --begin 0 0 \
+  --inputbox "Secondary DNS" 8 24 4.2.2.2 2>/tmp/networking
+if [ $? -ne 0 ];then
+  echo "An error occurred, aborting"
+  exit
+fi
 read ip mask gateway dns1 dns2 < /tmp/networking
 rm /tmp/networking
 netmask=${mask#/*}
@@ -25,7 +49,7 @@ if [ $? -eq 0 ];then
   sudo netcfg -a
   echo "CONNECTION='ethernet'
 DESCRIPTION='A basic static ethernet connection using iproute'
-INTERFACE='eth0'
+INTERFACE='$device'
 IP='static'
 ADDR='$ip'
 NETMASK='$netmask'
