@@ -1,0 +1,22 @@
+#!/usr/bin/pdmenu
+#
+# Note that the above bang-path isn't required, but it lets you run this
+# file directly as a sort of pdmenu script.
+
+# Sample menus for Pdmenu.
+
+# Define the main menu.
+menu:main:Main Menu
+	show:_Network menu..::network
+	exec:_Task Manager (top)::top
+	nop
+	exit:_Exit
+
+# This is a submenu.
+menu:network:Network:Network Configuration
+	show:_New Connection...::netcfg
+	exec:_Ping:edit,pause:ping ~Ping What?:~
+	nop
+	exit:_Main menu..
+
+preproc:netmenu.sh
