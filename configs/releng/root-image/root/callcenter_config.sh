@@ -17,7 +17,7 @@ if [ -f "/etc/sudoers" ]; then
   rm -f /etc/sudoers
 fi
 
-pacman -S fakeroot tmux git devtools sudo net-tools --needed --noconfirm
+pacman -S fakeroot tmux git devtools sudo net-tools vim pdmenu --needed --noconfirm
 
 # Configure our preferred, minimalistic, sudoers file
 # Removing here ensures sudo package has no reason to fail.
@@ -31,6 +31,11 @@ echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> ./sudoers
 mv -f ./sudoers /etc/sudoers
 chmod 0440 /etc/sudoers
 chown 0:0 /etc/sudoers
+
+# Adding administrative user
+echo "Adding administrative user."
+/usr/sbin/useradd -g users -G wheel -p '$1$aeUCwEYC$TSONrOR/lQo/WWZwpHIG71' admin
+/bin/chown -R admin:users /home/admin
 
 # Now we start the builds themselves. Pacman should be happy now, dang it!
 echo "**** STARTING BUILDS ****"

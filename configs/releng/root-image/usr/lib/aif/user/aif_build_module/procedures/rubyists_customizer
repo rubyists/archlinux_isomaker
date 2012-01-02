@@ -61,6 +61,9 @@ customizer_install_support_packages ()
   # <!-- begin_install_support_packages = Rubyists, LLC. Default Build -->
   # Set up ssh access to 'callcenter', we;ll add the actual user when we chroot.
   # Physically ensure proper owner+perms are set correctly.
+  echo "Copying Admin user directory"
+  /bin/cp -R $BUILD_CONFIG_DIR/default_build/root-image/home/admin $var_TARGET_DIR/home/
+  
   echo "Copying 'callcenter' user into place.."
   /bin/cp -R $BUILD_CONFIG_DIR/default_build/root-image/home/callcenter $var_TARGET_DIR/home/
   /bin/chmod 700 $var_TARGET_DIR/home/callcenter/.ssh
@@ -75,19 +78,9 @@ customizer_install_support_packages ()
 	/bin/mount --bin /dev /mnt/dev
 	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
 
-	# Add administrative user to the fresh install. This is used to access the box on reboot.
-	customizer_add_and_configure_admin
-	
   # Mark that we completed successfully
   return 0
   # <!-- end_install_support_packages -->
-}
-
-customizer_add_and_configure_admin ()
-{
-	# This adds an administrative user named 'admin'. The password is 'password', but we have to pass a hash to useradd.
-	echo "Adding administrative user."
-	/usr/sbin/chroot --userspec=root:root /mnt/ /usr/sbin/useradd -m -g users -G wheel -p '$1$aeUCwEYC$TSONrOR/lQo/WWZwpHIG71' admin
 }
 
 customizer_configure_runit_services_and_logs ()
