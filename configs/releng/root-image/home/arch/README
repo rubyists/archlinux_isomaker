@@ -1,0 +1,4 @@
+Adding this readme as a placeholder so that the 'arch directory actually gets created and stored in the repo.
+We use this directory for actual work. But because git doens't store empty directories, this dir never gets made.
+This README is just to make sure its added.
+
