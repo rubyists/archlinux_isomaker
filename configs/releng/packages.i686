@@ -58,3 +58,5 @@ fakeroot
 sudo
 devtools
 tmux
+redis
+redis
