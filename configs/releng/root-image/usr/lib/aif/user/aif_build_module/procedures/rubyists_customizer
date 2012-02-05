@@ -31,6 +31,10 @@ customizer_system_prep ()
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/resolv.conf $var_TARGET_DIR/etc/
   cp $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.conf $var_TARGET_DIR/etc/
 
+	# Prepare for RVM within chroot
+  cp $BUILD_CONFIG_DIR/default_build/root-image/etc/rvmrc $var_TARGET_DIR/etc/
+  cp $BUILD_CONFIG_DIR/default_build/root-image/etc/profile.d/rvm.sh $var_TARGET_DIR/etc/profile.d/
+
 	# Now the directories we need
   cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/network.d $var_TARGET_DIR/etc/
   cp -R $BUILD_CONFIG_DIR/default_build/root-image/etc/pacman.d $var_TARGET_DIR/etc/
@@ -40,6 +44,7 @@ customizer_system_prep ()
   # First the directories
   chmod 755 $var_TARGET_DIR/etc/pacman.d
   chmod 755 $var_TARGET_DIR/etc/network.d
+  chmod 755 $var_TARGET_DIR/etc/profile.d/rvm.sh
   chown -R root:root $var_TARGET_DIR/etc/pacman.d
   chown -R root:root $var_TARGET_DIR/etc/network.d
 
@@ -77,6 +82,9 @@ customizer_install_support_packages ()
 	# Execute everything from  script within the chroot so all commands can be called directly on the chroot fs.
 	/bin/mount --bin /dev /mnt/dev
 	/usr/sbin/chroot --userspec=root:root /mnt/ /root/callcenter_config.sh
+	
+	# Now install RVM in the chroot
+	/usr/sbin/chroot --userspec=root:root /mnt/ su -l callcenter -c /home/callcenter/install_rvm.sh
 
   # Mark that we completed successfully
   return 0
